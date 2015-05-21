@@ -1,0 +1,17 @@
+
+
+386_OBJECTS=\
+ $(OBJ_PATH)\$O\pasthrough.obj \
+
+
+_RES_FILE=$(OBJ_PATH)\$O\pasthrough.res
+
+
+
+# lowercased
+BASEDIR=e:\soft\winddk\7600.16385.1
+OBJECT_ROOT=e:\soft\winddk\7600.16385.1
+MAKEDIR_LOWERCASE=h:\pasthrough
+OBJ_PATH=h:\pasthrough
+CONCURRENT_MIDL=0
+CONCURRENT_MANIFEST_BUILD=0

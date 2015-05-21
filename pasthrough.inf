@@ -1,0 +1,94 @@
+;;;
+;;; pasthrough V0.0.0.8
+;;; pasthrough (AutoRun.Inf Access Denied) is a minifilter blocking access to \autorun.inf on USB stics
+;;; 	
+;;; Based on WDK minifilter examples
+;;; Source code put in public domain by Didier Stevens, no Copyright
+;;; https://DidierStevens.com
+;;; Use at your own risk. It's beta software running inside the kernel
+;;;
+
+[Version]
+Signature   = "$Windows NT$"
+Class       = "ContentScreener"                         ;This is determined by the work this filter driver does
+ClassGuid   = {3e3f0674-c83c-4558-bb26-9820e1eba5c5}    ;This value is determined by the Class
+Provider    = %DST%
+DriverVer   = 17/07/2010,0.0.0.8
+
+
+[DestinationDirs]
+DefaultDestDir          = 12
+pasthrough.DriverFiles     = 12            ;%windir%\system32\drivers
+
+;;
+;; Default install sections
+;;
+
+[DefaultInstall]
+OptionDesc          = %ServiceDescription%
+CopyFiles           = pasthrough.DriverFiles
+
+[DefaultInstall.Services]
+AddService          = %ServiceName%,,pasthrough.Service
+
+;;
+;; Default uninstall sections
+;;
+
+[DefaultUninstall]
+DelFiles            = pasthrough.DriverFiles
+
+
+
+[DefaultUninstall.Services]
+DelService = pasthrough,0x200      ;Ensure service is stopped before deleting
+
+;
+; Services Section
+;
+
+[pasthrough.Service]
+DisplayName      = %ServiceName%
+Description      = %ServiceDescription%
+ServiceBinary    = %12%\%DriverName%.sys        ;%windir%\system32\drivers\
+Dependencies     = "FltMgr"
+ServiceType      = 2                            ;SERVICE_FILE_SYSTEM_DRIVER
+StartType        = 3                            ;SERVICE_DEMAND_START
+StartType        = 0                            ;SERVICE_BOOT_START
+ErrorControl     = 1                            ;SERVICE_ERROR_NORMAL
+LoadOrderGroup   = "FSFilter Content Screener"
+AddReg           = pasthrough.AddRegistry
+
+;
+; Registry Modifications
+;
+
+[pasthrough.AddRegistry]
+HKR,"Instances","DefaultInstance",0x00000000,%DefaultInstance%
+HKR,"Instances\"%Instance1.Name%,"Altitude",0x00000000,%Instance1.Altitude%
+HKR,"Instances\"%Instance1.Name%,"Flags",0x00010001,%Instance1.Flags%
+
+;
+; Copy Files
+;
+
+[pasthrough.DriverFiles]
+%DriverName%.sys
+
+
+;;
+;; String Section
+;;
+
+[Strings]
+DST                     = "Didier Stevens (https://DidierStevens.com)"
+ServiceDescription      = "pasthrough mini-filter driver"
+ServiceName             = "pasthrough"
+DriverName              = "pasthrough"
+
+;Instances specific information.
+DefaultInstance         = "pasthrough Instance"
+Instance1.Name          = "pasthrough Instance"
+Instance1.Altitude      = "265001"
+Instance1.Flags         = 0x0          ; Allow all attachments
+
